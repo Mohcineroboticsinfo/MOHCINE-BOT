@@ -4,7 +4,7 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner }
     let bot = global.db.data.settings[this.user.jid] || {};
   // Check if the message is from the "Baileys" library or if the chat has antiCall set to false.
   if (m.isBaileys) return;
-  if (!bot.antiCall) return;
+  if (!bot.antiCall) {
 
   // Create a message mentioning the sender of the incoming message.
   const edtr = `🧙‍♂️ @${m.sender.split('@')[0]} 🧙‍♂️`;
@@ -46,5 +46,5 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isROwner }
     console.log({ messageStubType: m.messageStubType, messageStubParameters: m.messageStubParameters, type: m.messageStubType });
   }
 }
-
+}
 export const disabled = false;

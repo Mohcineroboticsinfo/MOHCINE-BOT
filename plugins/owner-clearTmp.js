@@ -9,16 +9,16 @@ import {
 
 let handler = async (m, { conn, __dirname, args }) => {
 
-m.reply(`✅ The folder was cleaned *tmp + session*`)
+m.reply(`✅ The folder was cleaned *tmp + sessions*`)
 m.react(done)
 const tmp = [tmpdir(), join(__dirname, '../tmp')]
   const filename = []
   tmp.forEach(dirname => readdirSync(dirname).forEach(file => filename.push(join(dirname, file))))
  
   //session bot
-  readdirSync("./session").forEach(file => {
+  readdirSync("./sessions").forEach(file => {
     if (file !== 'creds.json') {
-        unlinkSync("./session/" + file, { recursive: true, force: true })}}) 
+        unlinkSync("./sessions/" + file, { recursive: true, force: true })}}) 
       
   return filename.map(file => {
     unlinkSync(file)

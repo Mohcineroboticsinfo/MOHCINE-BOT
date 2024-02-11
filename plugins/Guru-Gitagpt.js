@@ -12,11 +12,12 @@ let gitagptHandler = async (m, { text, usedPrefix, command }) => {
   try {
     conn.sendPresenceUpdate('composing', m.chat);
     const prompt = encodeURIComponent(text);
-    const endpoint = `https://ultimetron.guruapi.tech/gita?prompt=${prompt}`;
+    const model = 'llama';
+    const endpoint = `https://gurugpt.cyclic.app/chat?prompt=${prompt}&model=${model}`;
 
     const response = await fetch(endpoint);
     const data = await response.json();
-    const result = data.completion; 
+    const result = data.data; // Extracting the "data" field
 
     m.reply(result);
   } catch (error) {
@@ -24,7 +25,7 @@ let gitagptHandler = async (m, { text, usedPrefix, command }) => {
     throw `*ERROR*`;
   }
 };
-gitagptHandler.help = ['gitagpt']
+gitagptHandler.help = ['GITAGPT']
 gitagptHandler.tags = ['AI']
 gitagptHandler.command = ['gitagpt'];
 gitagptHandler.diamond = false;

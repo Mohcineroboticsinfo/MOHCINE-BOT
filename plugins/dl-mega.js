@@ -1,6 +1,6 @@
 import { File } from "megajs";
 import path from "path";
-
+import displayLoadingScreen from '../lib/loading.js'
 let handler = async (m, { conn, args, usedPrefix, text, command }) => {
     try {
         if (!text) return m.reply(`${usedPrefix + command} https://mega.nz/file/ovJTHaQZ#yAbkrvQgykcH_NDKQ8eIc0zvsN7jonBbHZ_HTQL6lZ8`);
@@ -10,8 +10,7 @@ let handler = async (m, { conn, args, usedPrefix, text, command }) => {
 
         if (file.size >= 300000000) return m.reply('Error: File size is too large (Maximum Size: 300MB)');
 
-        const downloadingMessage = `🌩️ Downloading file... Please wait.`;
-        m.reply(downloadingMessage);
+        await displayLoadingScreen(conn, m.chat)
 
         const caption = `*_Successfully downloaded..._*\nFile: ${file.name}\nSize: ${formatBytes(file.size)}`;
 

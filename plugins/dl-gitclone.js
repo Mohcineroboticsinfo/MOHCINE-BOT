@@ -1,4 +1,4 @@
-
+import displayLoadingScreen from '../lib/loading.js'
 import fetch from 'node-fetch'
 const regex = /(?:https|git)(?::\/\/|@)github\.com[\/:]([^\/:]+)\/(.+)/i
 let handler = async (m, { conn, args, usedPrefix, command }) => {
@@ -9,8 +9,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     let url = `https://api.github.com/repos/${user}/${repo}/zipball`
     let filename = (await fetch(url, { method: 'HEAD' })).headers.get('content-disposition').match(/attachment; filename=(.*)/)[1]
   
-    m.reply(`✳️ *Wait, sending repository..*`)
-    conn.sendFile(m.chat, url, filename, null, m)
+    await displayLoadingScreen(conn, m.chat)
+        conn.sendFile(m.chat, url, filename, null, m)
 }
 handler.help = ['gitclone <url>']
 handler.tags = ['downloader']

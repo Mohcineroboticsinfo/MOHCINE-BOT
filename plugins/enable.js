@@ -114,7 +114,17 @@ case 'autobio':
       }
       chat.viewStory = isEnable
       break
-
+    case 'selfbot':
+    case 'self':
+      case 'selfmode':
+    case 'private':
+      isAll = true
+      if (!isROwner) {
+        global.dfail('rowner', m, conn)
+        throw false
+      }
+      global.opts['self'] = isEnable
+      break
     case 'antilink':
     case 'antilinkwa':
     case 'antilinkwha':
@@ -144,14 +154,11 @@ case 'autobio':
      break
      
      case 'chatbot':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn)
-          throw false
-        }
-      }
-      chat.chatbot = isEnable
-      break
+     case 'autosimi':
+     case 'autosimsimi':
+      isUser = true
+      user.chatbot = isEnable
+     break
      
     case 'restrict':
     case 'restringir':
@@ -216,6 +223,7 @@ case 'autobio':
 ⛊ nsfw
 ⛊ autosticker
 ⛊ detect
+⛊ antidelete
 ⛊ jarvis
 ⛊ antispam
 ⛊ antitoxic
@@ -225,10 +233,12 @@ case 'autobio':
 ⛊ chatbot 
 ╰──────────⳹
 ◈──『 *OWNER*』───⳹
+⛊ selfmode
 ⛊ onlydm
 ⛊ grouponly
 ⛊ autotype
 ⛊ autobio
+⛊ autostatus
 ╰──────────⳹
 *📌 Example :*
 *${usedPrefix}on* welcome
@@ -247,4 +257,3 @@ handler.tags = ['config']
 handler.command = /^((en|dis)able|(turn)?o(n|ff)|[01])$/i
 
 export default handler
-

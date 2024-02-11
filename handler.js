@@ -105,6 +105,8 @@ export async function handler(chatUpdate) {
                     user.role = 'Tadpole'
                 if (!('autolevelup' in user))
                     user.autolevelup = false
+                if (!('chatbot' in user))
+                    user.chatbot = false
             } else {
                 global.db.data.users[m.sender] = {
                     exp: 0,
@@ -123,7 +125,7 @@ export async function handler(chatUpdate) {
                     level: 0,
                     role: 'Tadpole',
                     autolevelup: false,
-                    
+                    chatbot: false,
                 }
                 }
             let chat = global.db.data.chats[m.chat]
@@ -147,7 +149,6 @@ export async function handler(chatUpdate) {
                 if (!("viewOnce" in chat)) chat.viewOnce = false
                 if (!("viewStory" in chat)) chat.viewStory = false
                 if (!("welcome" in chat)) chat.welcome = false
-                if (!("chatbot" in chat)) chat.chatbot = false
                 if (!isNumber(chat.expired)) chat.expired = 0
             } else
                 global.db.data.chats[m.chat] = {
@@ -170,10 +171,9 @@ export async function handler(chatUpdate) {
                     viewOnce: false,
                     viewStory: false,
                     welcome: false,
-                    chatbot: false
                 }
-          
-                
+
+
             let settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== "object") global.db.data.settings[this.user.jid] = {}
             if (settings) {
@@ -194,6 +194,8 @@ export async function handler(chatUpdate) {
             console.error(e)
         }
         if (opts["nyimak"])
+            return
+        if (!m.fromMe && opts["self"])
             return
         if (opts["pconly"] && m.chat.endsWith("g.us"))
             return
@@ -219,10 +221,7 @@ export async function handler(chatUpdate) {
                 await delay(time)
             }, time)
         }
-         if (process.env.MODE && process.env.MODE.toLowerCase() === 'private' && !(isROwner || isOwner))
-          return;
 
-        
         if (m.isBaileys)
             return
         m.exp += Math.ceil(Math.random() * 10)
@@ -504,10 +503,8 @@ export async function handler(chatUpdate) {
         } catch (e) {
             console.log(m, m.quoted, e)
         }
-        if (process.env.autoRead)
-            await conn.readMessages([m.key])
-        if (process.env.statusview && m.key.remoteJid === 'status@broadcast') 
-            await conn.readMessages([m.key])
+        if (opts["autoread"])
+            await this.chatRead(m.key).catch(() => {})
     }
 }
 
@@ -533,7 +530,7 @@ export async function participantsUpdate({
         owner: '👑'
     };
 
-    
+
 
     switch (action) {
         case 'add':
@@ -553,11 +550,11 @@ export async function participantsUpdate({
                     .replace('@group', await this.getName(id))
                     .replace('@desc', groupMetadata.desc?.toString() || 'error')
                     .replace('@user', '@' + user.split('@')[0]);
-          
+
                   let nthMember = groupMetadata.participants.length;
                   let secondText = `Welcome, ${await this.getName(user)}, our ${nthMember}th member`;
-          
-                  let welcomeApiUrl = `https://welcome.guruapi.tech/welcome-image?username=${encodeURIComponent(
+
+                  let welcomeApiUrl = `https://wecomeapi.onrender.com/welcome-image?username=${encodeURIComponent(
                     await this.getName(user)
                   )}&guildName=${encodeURIComponent(await this.getName(id))}&guildIcon=${encodeURIComponent(
                     ppgp
@@ -566,11 +563,11 @@ export async function participantsUpdate({
                   )}&avatar=${encodeURIComponent(pp)}&background=${encodeURIComponent(
                     'https://cdn.wallpapersafari.com/71/19/7ZfcpT.png'
                   )}`;
-          
+
                   try {
                     let welcomeResponse = await fetch(welcomeApiUrl);
                     let welcomeBuffer = await welcomeResponse.buffer();
-          
+
                     this.sendMessage(id, {
                         text: text,
                         contextInfo: {
@@ -579,7 +576,7 @@ export async function participantsUpdate({
                         title: "ᴛʜᴇ ɢᴜʀᴜ-ʙᴏᴛ",
                         body: "welcome to Group",
                         thumbnailUrl: welcomeApiUrl,
-                        sourceUrl: 'https://chat.whatsapp.com/BFfD1C0mTDDDfVdKPkxRAA',
+                        sourceUrl: 'https://chat.whatsapp.com/F3sB3pR3tClBvVmlIkqDJp',
                         mediaType: 1,
                         renderLargerThumbnail: true
                         }}})
@@ -590,7 +587,7 @@ export async function participantsUpdate({
               }
             }
             break;
-          
+
           case 'remove':
             if (chat.welcome) {
               let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata;
@@ -606,11 +603,11 @@ export async function participantsUpdate({
                 } finally {
                   let text = (chat.sBye || this.bye || conn.bye || 'HELLO, @user')
                     .replace('@user', '@' + user.split('@')[0]);
-          
+
                   let nthMember = groupMetadata.participants.length;
                   let secondText = `Goodbye, our ${nthMember}th group member`;
-          
-                  let leaveApiUrl = `https://welcome.guruapi.tech/leave-image?username=${encodeURIComponent(
+
+                  let leaveApiUrl = `https://wecomeapi.onrender.com/leave-image?username=${encodeURIComponent(
                     await this.getName(user)
                   )}&guildName=${encodeURIComponent(await this.getName(id))}&guildIcon=${encodeURIComponent(
                     ppgp
@@ -619,11 +616,11 @@ export async function participantsUpdate({
                   )}&avatar=${encodeURIComponent(pp)}&background=${encodeURIComponent(
                     'https://cdn.wallpapersafari.com/71/19/7ZfcpT.png'
                   )}`;
-          
+
                   try {
                     let leaveResponse = await fetch(leaveApiUrl);
                     let leaveBuffer = await leaveResponse.buffer();
-          
+
                     this.sendMessage(id, {
                         text: text,
                         contextInfo: {
@@ -632,7 +629,7 @@ export async function participantsUpdate({
                         title: "ᴛʜᴇ ɢᴜʀᴜ-ʙᴏᴛ",
                         body: "Goodbye from  Group",
                         thumbnailUrl: leaveApiUrl,
-                        sourceUrl: 'https://chat.whatsapp.com/BFfD1C0mTDDDfVdKPkxRAA',
+                        sourceUrl: 'https://chat.whatsapp.com/F3sB3pR3tClBvVmlIkqDJp',
                         mediaType: 1,
                         renderLargerThumbnail: true
                         }}})
@@ -645,7 +642,6 @@ export async function participantsUpdate({
             break;
             case "promote":
                 const promoteText = (chat.sPromote || this.spromote || conn.spromote || `${emoji.promote} @user *is now admin*`).replace("@user", "@" + participants[0].split("@")[0]);
-                
                 if (chat.detect) {
                     this.sendMessage(id, {
                         text: promoteText.trim(),
@@ -655,7 +651,6 @@ export async function participantsUpdate({
                 break;
             case "demote":
                 const demoteText = (chat.sDemote || this.sdemote || conn.sdemote || `${emoji.demote} @user *demoted from admin*`).replace("@user", "@" + participants[0].split("@")[0]);
-                
                 if (chat.detect) {
                     this.sendMessage(id, {
                         text: demoteText.trim(),
@@ -712,7 +707,7 @@ export async function groupsUpdate(groupsUpdate) {
         } else if (groupUpdate.restrict === false) {
             text = (chats.sRestrictOff || this.sRestrictOff || conn.sRestrictOff || `*${emoji.restrictOff} Group is now restricted to admins only!*`)
         }
-        
+
 
         if (!text) continue
         await this.sendMessage(id, { text, mentions: this.parseMention(text) })
@@ -724,11 +719,6 @@ Delete Chat
  */
 export async function deleteUpdate(message) {
     try {
-        
-       
-      if (typeof process.env.antidelete === 'undefined' || process.env.antidelete.toLowerCase() === 'false') return;
-
-
         const {
             fromMe,
             id,
@@ -740,16 +730,20 @@ export async function deleteUpdate(message) {
         if (!msg)
             return
         let chat = global.db.data.chats[msg.chat] || {}
-       
-            await this.reply(conn.user.id, `
+        if (chat.antiDelete)
+            return
+            await this.reply(msg.chat, `
             ≡ deleted a message 
             ┌─⊷  𝘼𝙉𝙏𝙄 𝘿𝙀𝙇𝙀𝙏𝙀 
             ▢ *Number :* @${participant.split`@`[0]} 
             └─────────────
+            TO DEACTIVE , PRESS 
+            */off antidelete*
+            *.enable delete*
             `.trim(), msg, {
                         mentions: [participant]
                     })
-        this.copyNForward(conn.user.id, msg, false).catch(e => console.log(e, msg))
+        this.copyNForward(msg.chat, msg, false).catch(e => console.log(e, msg))
     } catch (e) {
         console.error(e)
     }
@@ -768,7 +762,7 @@ export async function pollUpdate(message) {
                         pollUpdates: pollCreation.pollUpdates,
                     })
                     message.pollUpdates[0].vote = pollMessage
-                    
+
                     await console.log(pollMessage)
                     this.appenTextMessage(message, message.pollUpdates[0].vote || pollMessage.filter((v) => v.voters.length !== 0)[0]?.name, message.message);
                 }
@@ -798,7 +792,7 @@ export async function presenceUpdate(presenceUpdate) {
         const caption = `\n@${username} has stopped being AFK and is currently typing.\n\nReason: ${
             user.afkReason ? user.afkReason : "No Reason"
           }\nFor the past ${timeAfk.toTimeString()}.\n`;
-          
+
 
         this.reply(id, caption, null, {
             mentions: this.parseMention(caption)

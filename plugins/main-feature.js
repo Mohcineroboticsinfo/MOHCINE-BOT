@@ -4,6 +4,7 @@ import fetch from 'node-fetch'
 import moment from 'moment-timezone'
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
+let pp = await conn.profilePictureUrl(who).catch(_ => hwaifu.getRandom())
 let name = await conn.getName(who)
 let totalf = Object.values(global.plugins).filter(
     (v) => v.help && v.tags

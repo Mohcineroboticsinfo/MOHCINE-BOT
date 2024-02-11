@@ -20,7 +20,6 @@ let imdbHandler = async (m, { conn, text }) => {
     `*Movie Information:*\n
      • *Title:* ${json.title}\n
      • *Year:* ${json.year}\n
-     • *Seasons:* ${json.totalseasons}\n
      • *Rated:* ${json.rated}\n
      • *Released:* ${json.released}\n
      • *Runtime:* ${json.runtime}\n
