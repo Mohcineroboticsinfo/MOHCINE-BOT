@@ -11,7 +11,7 @@ let handler = async (m, { conn, text, args, isPrems, isOwner, usedPrefix, comman
   m.react(rwait); 
 
   try {
-    let q = '192kbps'; 
+    let q = 'Highest'; 
     let v = args[0]; 
     const yt = await youtubedl(v).catch(async () => await youtubedlv2(v)); 
     const dl_url = await yt.audio[q].download(); 
