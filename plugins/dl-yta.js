@@ -2,8 +2,6 @@ import { youtubedl, youtubedlv2 } from '@bochilteam/scraper';
 import yts from 'yt-search';
 import ytdl from 'ytdl-core';
 import axios from 'axios'
-import {bestFormat, getUrlDl} from '../lib/y2dl.js';
-
 let handler = async (m, { conn, text, args, isPrems, isOwner, usedPrefix, command }) => {
   if (!args || !args[0]) throw `✳️ Example :\n${usedPrefix + command} https://youtu.be/YzkTFFwxtXI`;
   if (!args[0].match(/youtu/gi)) throw `❎ Verify that it is a YouTube link.`;
